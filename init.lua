@@ -86,144 +86,6 @@ else
 	vim.opt.maxmempattern = 20000
 
 	--------------------------------------------------------------------------------
-	-- STATUSLINE
-	--------------------------------------------------------------------------------
-
-	local cached_branch = ""
-	local last_check = 0
-	local function git_branch()
-		local now = vim.loop.now()
-		if now - last_check > 5000 then
-			cached_branch = vim.fn.system("git branch --show-current 2>/dev/null | tr -d '\n'")
-			last_check = now
-		end
-		if cached_branch ~= "" then
-			return " \u{e725} " .. cached_branch .. " "
-		end
-		return ""
-	end
-
-	local function file_type()
-		local ft = vim.bo.filetype
-		local icons = {
-			bash = "\u{f489} ",
-			c = "\u{e61e} ",
-			cpp = "\u{e61d} ",
-			css = "\u{e749} ",
-			dart = "\u{e798} ",
-			dockerfile = "\u{f308} ",
-			elixir = "\u{e62d} ",
-			gitcommit = "\u{f418} ",
-			gitconfig = "\u{f1d3} ",
-			go = "\u{e724} ",
-			haskell = "\u{e777} ",
-			html = "\u{e736} ",
-			java = "\u{e738} ",
-			javascript = "\u{e74e} ",
-			javascriptreact = "\u{e7ba} ",
-			json = "\u{e60b} ",
-			kotlin = "\u{e634} ",
-			lua = "\u{e620} ",
-			markdown = "\u{e73e} ",
-			php = "\u{e73d} ",
-			python = "\u{e73c} ",
-			ruby = "\u{e739} ",
-			rust = "\u{e7a8} ",
-			scss = "\u{e749} ",
-			sh = "\u{f489} ",
-			sql = "\u{e706} ",
-			swift = "\u{e755} ",
-			toml = "\u{e615} ",
-			typescript = "\u{e628} ",
-			typescriptreact = "\u{e7ba} ",
-			vim = "\u{e62b} ",
-			xml = "\u{f05c} ",
-			yaml = "\u{f481} ",
-			zsh = "\u{f489} ",
-		}
-
-		if ft == "" then
-			return " \u{f15b} "
-		end
-
-		return ((icons[ft] or " \u{f15b} ") .. ft)
-	end
-
-	local function file_size()
-		local size = vim.fn.getfsize(vim.fn.expand("%"))
-		if size < 0 then
-			return ""
-		end
-		local size_str
-		if size < 1024 then
-			size_str = size .. "B"
-		elseif size < 1024 * 1024 then
-			size_str = string.format("%.1fK", size / 1024)
-		else
-			size_str = string.format("%.1fM", size / 1024 / 1024)
-		end
-		return " \u{f016} " .. size_str .. " "
-	end
-
-	local function mode_icon()
-		local mode = vim.fn.mode()
-		local modes = {
-			n = " \u{f121}  NORMAL",
-			i = " \u{f11c}  INSERT",
-			v = " \u{f0168} VISUAL",
-			V = " \u{f0168} V-LINE",
-			["\22"] = " \u{f0168} V-BLOCK",
-			c = " \u{f120} COMMAND",
-			s = " \u{f0c5} SELECT",
-			S = " \u{f0c5} S-LINE",
-			["\19"] = " \u{f0c5} S-BLOCK",
-			R = " \u{f044} REPLACE",
-			r = " \u{f044} REPLACE",
-			["!"] = " \u{f489} SHELL",
-			t = " \u{f120} TERMINAL",
-		}
-		return modes[mode] or (" \u{f059} " .. mode)
-	end
-
-	_G.mode_icon = mode_icon
-	_G.git_branch = git_branch
-	_G.file_type = file_type
-	_G.file_size = file_size
-
-	vim.cmd([[
-  highlight StatusLineBold gui=bold cterm=bold
-]])
-
-	local function setup_dynamic_statusline()
-		vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
-			callback = function()
-				vim.opt_local.statusline = table.concat({
-					" ",
-					"%#StatusLineBold#",
-					"%{v:lua.mode_icon()}",
-					"%#StatusLine#",
-					" \u{e0b1} %f %h%m%r",
-					"%{v:lua.git_branch()}",
-					"\u{e0b1} ",
-					"%{v:lua.file_type()}",
-					"\u{e0b1} ",
-					"%{v:lua.file_size()}",
-					"%=",
-					" \u{f017} %l:%c  %P ",
-				})
-			end,
-		})
-		vim.api.nvim_set_hl(0, "StatusLineBold", { bold = true })
-		vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
-			callback = function()
-				vim.opt_local.statusline = " %f %h%m%r \u{e0b1} %{v:lua.file_type()} %= %l:%c  %P "
-			end,
-		})
-	end
-
-	setup_dynamic_statusline()
-
-	--------------------------------------------------------------------------------
 	-- GENERAL KEYMAPS
 	--------------------------------------------------------------------------------
 	vim.g.mapleader = " "
@@ -294,6 +156,7 @@ else
 	vim.pack.add({
 		"https://www.github.com/nvim-tree/nvim-tree.lua",
 		"https://github.com/nvim-tree/nvim-web-devicons.git",
+		"https://github.com/nvim-lualine/lualine.nvim.git",
 		"https://www.github.com/ibhagwan/fzf-lua",
 		"https://www.github.com/echasnovski/mini.nvim",
 		"https://www.github.com/lewis6991/gitsigns.nvim",
@@ -318,6 +181,7 @@ else
 
 	packadd("nvim-tree.lua")
 	packadd("nvim-web-devicons")
+	packadd("lualine.nvim")
 	packadd("fzf-lua")
 	packadd("mini.nvim")
 	packadd("gitsigns.nvim")
@@ -345,6 +209,9 @@ else
 
 	-- SETUP: nvim-tree icons
 	require("nvim-web-devicons").setup({})
+
+	-- SETUP: lualine
+	require("lualine").setup({ options = { theme = "tomorrow_night" } })
 
 	-- SETUP: fzf-lua
 	require("fzf-lua").setup({})
