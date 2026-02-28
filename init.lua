@@ -330,7 +330,7 @@ else
 
 	-- SETUP: nvim-tree
 	require("nvim-tree").setup({
-		view = { width = 35 },
+		view = { width = 45 },
 		filters = { dotfiles = false },
 		renderer = { group_empty = true },
 	})
