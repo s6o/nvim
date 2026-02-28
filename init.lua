@@ -293,6 +293,7 @@ else
 	--------------------------------------------------------------------------------
 	vim.pack.add({
 		"https://www.github.com/nvim-tree/nvim-tree.lua",
+		"https://github.com/nvim-tree/nvim-web-devicons.git",
 		"https://www.github.com/ibhagwan/fzf-lua",
 		"https://www.github.com/echasnovski/mini.nvim",
 		"https://www.github.com/lewis6991/gitsigns.nvim",
@@ -316,6 +317,7 @@ else
 	end
 
 	packadd("nvim-tree.lua")
+	packadd("nvim-web-devicons")
 	packadd("fzf-lua")
 	packadd("mini.nvim")
 	packadd("gitsigns.nvim")
@@ -340,6 +342,9 @@ vim.keymap.set("n", "<leader>e", function() require("nvim-tree.api").tree.toggle
 	vim.api.nvim_set_hl(0, "NvimTreeNormal", { bg = "none" })
 	vim.api.nvim_set_hl(0, "NvimTreeWinSeparator", { fg = "#2a2a2a", bg = "none" })
 	vim.api.nvim_set_hl(0, "NvimTreeEndOfBuffer", { bg = "none" })
+
+	-- SETUP: nvim-tree icons
+	require("nvim-web-devicons").setup({})
 
 	-- SETUP: fzf-lua
 	require("fzf-lua").setup({})
